@@ -1,0 +1,10 @@
+datasets==2.19.1
+tqdm
+rouge
+jieba
+fuzzywuzzy
+torch
+transformers==4.31.0
+einops
+flash_attn==2.5.8
+fastchat==0.2.36
