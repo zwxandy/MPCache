@@ -28,18 +28,14 @@ Install the required packages with pip tool:
 ```bash
 pip install -r requirements.txt
 ```
-For LLaMA-2-based model inference on long sequences, we follow the optimization of FlashAttention during the prefill stage for saving GPU memory.
+For LLM inference on long contexts, we follow the optimization of FlashAttention during the prefill stage for saving GPU memory.
 The relevant dependencies can be installed according to the codebase of [FlashAttention](https://github.com/Dao-AILab/flash-attention).
 
 **Dataset choice:**
 
 To evaluate a specific dataset, we can modify the following code in `pred_mine.py` (we choose the hotpotqa dataset as an example):
 ```python
-datasets = ["narrativeqa", "qasper", "multifieldqa_en", "multifieldqa_zh", "hotpotqa", "2wikimqa", "musique", \
-            "dureader", "gov_report", "qmsum", "multi_news", "vcsum", "trec", "triviaqa", "samsum", "lsht", \
-            "passage_count", "passage_retrieval_en", "passage_retrieval_zh", "lcc", "repobench-p"]
-
-datasets = ["hotpotqa"]  # define the chosen dataset
+datasets = ["hotpotqa"]  # choose the dataset
 ```
 
 **Model file and configuration:**
@@ -50,9 +46,8 @@ For hierarchical clustering, the variable `alpha` controls the ratio between $\m
 `cluster_size1` and `cluster_size2` control the granularities of two hierarchical levels (set `cluster_size1=32` and `cluster_size2=16` by default).
 `ratio1` and `ratio2` control the dynamic selection ratio at the 1st hierarchical level and the final dynamic selection ratio, respectively.
 
-Layer-wise index sharing is implemented in `modeling_llama.py`, and we provide the modified file in this repo. To enable layer-wise index sharing, you can simply replace the original `modeling_llama.py` with ours.
-
-We give an example on the hotpotqa dataset here, 70\% tokens are pruned (i.e., 30\% preserved) on average after static eviction based on the accumulated attention sum (refer to H2O and SnapKV); set `ratio2=0.1` for a final KV cache budget of 3\%, `ratio2=0.2` for a final KV cache budget of 6\%, `ratio2=0.4` for a final KV cache budget of 12\%.
+We give an example on the hotpotqa dataset here, 30\% tokens are preserved on average after static eviction based on the accumulated attention score.
+Hence, set `ratio2=0.1` for a final KV cache budget of 3\%, `ratio2=0.2` for a final KV cache budget of 6\%.
 
 **Model inference and evaluation:**
 
