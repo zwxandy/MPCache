@@ -23,8 +23,7 @@ You can also download the datasets from the website [this link](https://huggingf
 ## Evaluation
 
 **Packages and environment:**
-
-Install the required packages with pip tool: 
+Python version is `3.10`. Install the required packages with pip tool: 
 ```bash
 pip install -r requirements.txt
 ```

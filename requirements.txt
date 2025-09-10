@@ -7,4 +7,7 @@ torch
 transformers==4.31.0
 einops
 flash_attn==2.5.8
-fastchat==0.2.36
+fastchat
+psutil
+accelerate
+SentencePiece

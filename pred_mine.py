@@ -1,6 +1,7 @@
 import imp
 import os
 from datasets import load_dataset
+from datasets.exceptions import DatasetGenerationError
 import torch
 import json
 from transformers import AutoTokenizer, LlamaTokenizer, LlamaForCausalLM, AutoModelForCausalLM
@@ -174,12 +175,18 @@ if __name__ == '__main__':
     for dataset in datasets:
         # print(f'dataset: {dataset}')
         if args.e:
-            data = load_dataset('THUDM/LongBench', f"{dataset}_e", split='test')
+            try:
+                data = load_dataset('THUDM/LongBench', f"{dataset}_e", split='test', trust_remote_code=True)
+            except DatasetGenerationError:
+                data = load_dataset('THUDM/LongBench', f"{dataset}_e", split='test', trust_remote_code=True, download_mode='force_redownload')
             if not os.path.exists(f"pred_e/{model_name}"):
                 os.makedirs(f"pred_e/{model_name}")
             out_path = f"pred_e/{model_name}/{dataset}.jsonl"
         else:
-            data = load_dataset('THUDM/LongBench', dataset, split='test')
+            try:
+                data = load_dataset('THUDM/LongBench', dataset, split='test', trust_remote_code=True)
+            except DatasetGenerationError:
+                data = load_dataset('THUDM/LongBench', dataset, split='test', trust_remote_code=True, download_mode='force_redownload')
             print(f'✅ Finish loading dataset {dataset}!')
             if not os.path.exists(f"pred_mine/{model_name}"):
                 os.makedirs(f"pred_mine/{model_name}")
