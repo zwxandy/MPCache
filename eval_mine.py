@@ -21,9 +21,6 @@ dataset2metric = {
     "multifieldqa_en": qa_f1_score,
     "multifieldqa_zh": qa_f1_zh_score,
     "hotpotqa": qa_f1_score,
-    "hotpotqa_2025-09-09_22-55-07": qa_f1_score,
-    "hotpotqa_2025-09-10_00-55-43": qa_f1_score,
-    "hotpotqa_2025-09-10_01-19-07": qa_f1_score,
     "2wikimqa": qa_f1_score,
     "musique": qa_f1_score,
     "dureader": rouge_zh_score,
@@ -91,7 +88,8 @@ if __name__ == '__main__':
         if not filename.endswith("jsonl"):
             continue
         predictions, answers, lengths = [], [], []
-        dataset = filename.split('.')[0]
+        dataset_with_time = filename.split('.')[0]
+        dataset = filename.split('_')[0]
         with open(f"{path}{filename}", "r", encoding="utf-8") as f:
             for line in f:
                 data = json.loads(line)
@@ -104,7 +102,8 @@ if __name__ == '__main__':
             score = scorer_e(dataset, predictions, answers, lengths, all_classes)
         else:
             score = scorer(dataset, predictions, answers, all_classes)
-        scores[dataset] = score
+        # scores[dataset] = score
+        scores[dataset_with_time] = score
     if args.e:
         out_path = f"pred_e/{args.model}/result.json"
     else:

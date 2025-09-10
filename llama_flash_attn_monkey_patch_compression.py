@@ -90,7 +90,7 @@ def forward(
             cluster_size1 = 32  # 1st level: s=32
             cluster_size2 = 16  # 2st level: s=16
             if is_print_dynamic:
-                print(f'Dynamic selection ratio: {ratio2 * 100}%')
+                print(f'Dynamic selection ratio: {ratio2 * 100:.2f}%')
                 is_print_dynamic = False
             b_max, b_min, num_padding_token = group_key_min_max(key_states_evict_static, group_size=cluster_size1)
             sim = torch.sum((alpha * query_states * b_max + (1 - alpha) * query_states * b_min), dim=-1).unsqueeze(2)
@@ -213,10 +213,10 @@ def forward(
     if len(static_ratio) == 32:
         record_static_ratio.append(sum(static_ratio) / 32)
         static_ratio.clear()
-    # if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
-    #     print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio)}%')
+    if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
+        print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
     if is_print_static:
-        print(f'Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100}%')
+        print(f'Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
         is_print_static = False
 
     if key_padding_mask is None:
