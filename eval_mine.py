@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import numpy as np
+import re
 
 from metrics import (
     qa_f1_score,
@@ -89,7 +90,8 @@ if __name__ == '__main__':
             continue
         predictions, answers, lengths = [], [], []
         dataset_with_time = filename.split('.')[0]
-        dataset = filename.split('_')[0]
+        # Extract substring before the first digit in filename and trim common separators
+        dataset = re.split(r"\d", filename, maxsplit=1)[0].rstrip("_-. ")
         with open(f"{path}{filename}", "r", encoding="utf-8") as f:
             for line in f:
                 data = json.loads(line)

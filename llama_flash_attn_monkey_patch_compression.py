@@ -18,6 +18,14 @@ dynamic_ratio = []
 dataset = None
 is_print_static, is_print_dynamic = True, True
 
+skip_first2layers = False
+if skip_first2layers:
+    skip_layer_idx = [0, 1]  # skip the first 2 layers
+    layer_num = 30
+else:
+    skip_layer_idx = []  # do not skip any layer
+    layer_num = 32
+
 def forward(
         self,
         hidden_states: torch.Tensor,
@@ -67,13 +75,13 @@ def forward(
     # transform the data into the format required by flash attention
     
     # print(f'q: {query_states.shape}, k: {key_states.shape}, v: {value_states.shape}')
-
+    
     # start decoding
     if query_states.shape[-2] == 1 or query_states.shape[-2] != key_states.shape[-2]:
         # decode token-by-token, do not use flash attention
         # in incremental state, do not use flash attention
         
-        if layer_idx != 0 and layer_idx != 1:
+        if layer_idx not in skip_layer_idx:
             generated_token_idx = torch.arange(self.attn_static_mask.shape[-1], key_states.shape[2]).to(self.ic_token_idx)
             remain_token = torch.cat((self.ic_token_idx.squeeze(), generated_token_idx), dim=0)
             key_states_evict_static = key_states[:, :, remain_token, :]
@@ -82,7 +90,7 @@ def forward(
             key_states_evict_static = key_states
             value_states_evict_static = value_states
         
-        if layer_idx != 0 and layer_idx != 1:
+        if layer_idx not in skip_layer_idx:
             # hierarchical clustering
             alpha = 0.6
             ratio1 = 0.5  # 1st level selection ratio
@@ -148,15 +156,17 @@ def forward(
             attn_weights = attn_weights + attention_mask
             attn_weights = torch.max(attn_weights, torch.tensor(torch.finfo(attn_weights.dtype).min))
         
-        if layer_idx != 0 and layer_idx != 1:
+        if layer_idx not in skip_layer_idx:
             attn_weights += self.attn_dynamic_mask
 
         # upcast attention to fp32
         attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
-        dynamic_ratio.append((1 - attn_weights[0, 0, 0].tolist().count(0) / attn_weights.shape[-1]) * 100)
-        # if len(dynamic_ratio) == 32:
-        #     print(f'Dynamic selection ratio: {sum(dynamic_ratio) / 32}%')
-        #     dynamic_ratio.clear()
+
+        if layer_idx not in skip_layer_idx:
+            dynamic_ratio.append((1 - attn_weights[0, 0, 0].tolist().count(0) / attn_weights.shape[-1]) * 100)
+        if len(dynamic_ratio) == layer_num:
+            print(f'Dynamic selection ratio: {sum(dynamic_ratio) / layer_num}%')
+            dynamic_ratio.clear()
         
         attn_output = torch.matmul(attn_weights, value_states_evict_static)
 
@@ -186,7 +196,10 @@ def forward(
     key_padding_mask = attention_mask
     
     static_threshold_list = {
-        'hotpotqa': (1e-8, 0.3),
+        'hotpotqa': (1e-8, 0.26),
+        'narrativeqa': (1e-3, 0.15),
+        'triviaqa': (1e-4, 0.2),
+        'passage_retrieval_en': (1e-20, 0.5),
     }
     if key_states.shape[2] > 24000:
         last_attn_weights = torch.matmul(query_states[:, :, -int(key_states.shape[2]*0.1):, :], key_states.transpose(-1, -2))
@@ -206,14 +219,16 @@ def forward(
     else:
         self.base_dynamic_mask = torch.full((1, last_attn_weights.shape[1], 1, ic_token_idx.shape[0]), fill_value=torch.finfo(last_attn_weights.dtype).min).to(last_attn_weights.device)
 
-    if ic_token_idx is None:
-        static_ratio.append(100 * self.ic_token_idx.shape[0] / q_len)
-    else:
-        static_ratio.append(100 * ic_token_idx.shape[0] / q_len)
-    if len(static_ratio) == 32:
-        record_static_ratio.append(sum(static_ratio) / 32)
+    if layer_idx not in skip_layer_idx:
+        if ic_token_idx is None:
+            static_ratio.append(100 * self.ic_token_idx.shape[0] / q_len)
+        else:
+            static_ratio.append(100 * ic_token_idx.shape[0] / q_len)
+    if len(static_ratio) == layer_num:
+        record_static_ratio.append(sum(static_ratio) / layer_num)
         static_ratio.clear()
     if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
+    # if len(record_static_ratio) == 20:
         print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
     if is_print_static:
         print(f'Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
