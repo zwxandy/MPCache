@@ -27,6 +27,7 @@ Python version is `3.10`. Install the required packages with pip tool:
 ```bash
 pip install -r requirements.txt
 ```
+Note that the package versions are important.
 For LLM inference on long contexts, we follow the optimization of FlashAttention during the prefill stage for saving GPU memory.
 The relevant dependencies can be installed according to the codebase of [FlashAttention](https://github.com/Dao-AILab/flash-attention).
 
