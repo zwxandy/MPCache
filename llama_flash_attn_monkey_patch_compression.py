@@ -164,9 +164,9 @@ def forward(
 
         if layer_idx not in skip_layer_idx:
             dynamic_ratio.append((1 - attn_weights[0, 0, 0].tolist().count(0) / attn_weights.shape[-1]) * 100)
-        if len(dynamic_ratio) == layer_num:
-            print(f'Dynamic selection ratio: {sum(dynamic_ratio) / layer_num}%')
-            dynamic_ratio.clear()
+        # if len(dynamic_ratio) == layer_num:
+        #     print(f'Dynamic selection ratio: {sum(dynamic_ratio) / layer_num}%')
+        #     dynamic_ratio.clear()
         
         attn_output = torch.matmul(attn_weights, value_states_evict_static)
 
@@ -196,7 +196,7 @@ def forward(
     key_padding_mask = attention_mask
     
     static_threshold_list = {
-        'hotpotqa': (1e-8, 0.26),
+        'hotpotqa': (1e-8, 0.3),
         'narrativeqa': (1e-3, 0.15),
         'triviaqa': (1e-4, 0.2),
         'passage_retrieval_en': (1e-20, 0.5),
