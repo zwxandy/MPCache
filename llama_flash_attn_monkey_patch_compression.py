@@ -20,11 +20,11 @@ is_print_static, is_print_dynamic = True, True
 
 skip_first2layers = False
 if skip_first2layers:
-    print('Skip the first 2 layers.')
+    print('🏄‍♂️ Skip the first 2 layers.')
     skip_layer_idx = [0, 1]  # skip the first 2 layers
     layer_num = 30
 else:
-    print('Do not skip any layer.')
+    print('🏄‍♂️ Do not skip any layer.')
     skip_layer_idx = []  # do not skip any layer
     layer_num = 32
 
@@ -96,12 +96,12 @@ def forward(
             # hierarchical clustering
             alpha = 0.6
             ratio1 = 0.5  # 1st level selection ratio
-            ratio2 = 0.2  # overall dynamic selection ratio
+            ratio2 = 0.3  # overall dynamic selection ratio
             cluster_size1 = 32  # 1st level: s=32
             cluster_size2 = 16  # 2st level: s=16
             if is_print_dynamic:
-                print(f'Selection ratio at 1st level: {ratio1 * 100:.2f}%')
-                print(f'Overall dynamic selection ratio: {ratio2 * 100:.2f}%')
+                print(f'⚙️ Selection ratio at 1st level: {ratio1 * 100:.2f}%')
+                print(f'⚙️ Overall dynamic selection ratio: {ratio2 * 100:.2f}%')
                 is_print_dynamic = False
             b_max, b_min, num_padding_token = group_key_min_max(key_states_evict_static, group_size=cluster_size1)
             sim = torch.sum((alpha * query_states * b_max + (1 - alpha) * query_states * b_min), dim=-1).unsqueeze(2)
@@ -234,7 +234,7 @@ def forward(
     # if len(record_static_ratio) == 20:
         print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
     if is_print_static:
-        print(f'Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
+        print(f'⚙️ Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
         is_print_static = False
 
     if key_padding_mask is None:

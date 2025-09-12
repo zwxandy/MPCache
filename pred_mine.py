@@ -170,7 +170,7 @@ if __name__ == '__main__':
         # datasets = ["narrativeqa", "qasper", "multifieldqa_en", "multifieldqa_zh", "hotpotqa", "2wikimqa", "musique", \
         #             "dureader", "gov_report", "qmsum", "multi_news", "vcsum", "trec", "triviaqa", "samsum", "lsht", \
         #             "passage_count", "passage_retrieval_en", "passage_retrieval_zh", "lcc", "repobench-p"]
-        datasets = ["hotpotqa"]
+        datasets = ["triviaqa"]
     # we design specific prompt format and max generation length for each task, feel free to modify them to optimize model output
     dataset2prompt = json.load(open("config/dataset2prompt.json", "r"))
     dataset2maxlen = json.load(open("config/dataset2maxlen.json", "r"))
@@ -188,7 +188,7 @@ if __name__ == '__main__':
             if not os.path.exists(f"pred_e/{model_name}"):
                 os.makedirs(f"pred_e/{model_name}")
             out_path = f"pred_e/{model_name}/{dataset}.jsonl"
-            log_path = f"pred_e/{model_name}/{dataset}_{current_time}.txt"
+            log_path = None
         else:
             try:
                 data = load_dataset('THUDM/LongBench', dataset, split='test', trust_remote_code=True)
@@ -198,7 +198,7 @@ if __name__ == '__main__':
             if not os.path.exists(f"pred_mine/{model_name}"):
                 os.makedirs(f"pred_mine/{model_name}")
             out_path = f"pred_mine/{model_name}/{dataset}_{current_time}.jsonl"
-            log_path = f"pred_mine/{model_name}/{dataset}_{current_time}.txt"
+            log_path = None
         prompt_format = dataset2prompt[dataset]
         max_gen = dataset2maxlen[dataset]
         data_all = [data_sample for data_sample in data]
