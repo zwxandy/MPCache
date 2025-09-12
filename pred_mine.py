@@ -16,6 +16,7 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 import inspect
 import datetime
+import sys
 
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
@@ -54,7 +55,13 @@ def post_process(response, model_name):
         response = response.split("<eoa>")[0]
     return response
 
-def get_pred(rank, world_size, data, max_length, max_gen, prompt_format, dataset, device, model_name, model2path, out_path):
+def get_pred(rank, world_size, data, max_length, max_gen, prompt_format, dataset, device, model_name, model2path, out_path, log_path):
+    # redirect stdout/stderr to file for this process
+    if log_path is not None:
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        log_file = open(log_path, "a", buffering=1)
+        sys.stdout = log_file
+        sys.stderr = log_file
     device = torch.device(f'cuda:{rank}')
     model, tokenizer = load_model_and_tokenizer(model2path[model_name], model_name, device, dataset)
     model_class = type(model)
@@ -173,7 +180,6 @@ if __name__ == '__main__':
     if not os.path.exists("pred_e"):
         os.makedirs("pred_e")
     for dataset in datasets:
-        # print(f'dataset: {dataset}')
         if args.e:
             try:
                 data = load_dataset('THUDM/LongBench', f"{dataset}_e", split='test', trust_remote_code=True)
@@ -182,6 +188,7 @@ if __name__ == '__main__':
             if not os.path.exists(f"pred_e/{model_name}"):
                 os.makedirs(f"pred_e/{model_name}")
             out_path = f"pred_e/{model_name}/{dataset}.jsonl"
+            log_path = f"pred_e/{model_name}/{dataset}_{current_time}.txt"
         else:
             try:
                 data = load_dataset('THUDM/LongBench', dataset, split='test', trust_remote_code=True)
@@ -191,6 +198,7 @@ if __name__ == '__main__':
             if not os.path.exists(f"pred_mine/{model_name}"):
                 os.makedirs(f"pred_mine/{model_name}")
             out_path = f"pred_mine/{model_name}/{dataset}_{current_time}.jsonl"
+            log_path = f"pred_mine/{model_name}/{dataset}_{current_time}.txt"
         prompt_format = dataset2prompt[dataset]
         max_gen = dataset2maxlen[dataset]
         data_all = [data_sample for data_sample in data]
@@ -198,7 +206,7 @@ if __name__ == '__main__':
         processes = []
         for rank in range(world_size):
             p = mp.Process(target=get_pred, args=(rank, world_size, data_subsets[rank], max_length, \
-                        max_gen, prompt_format, dataset, device, model_name, model2path, out_path))
+                        max_gen, prompt_format, dataset, device, model_name, model2path, out_path, log_path))
             p.start()
             processes.append(p)
         for p in processes:
