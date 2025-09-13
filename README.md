@@ -40,14 +40,13 @@ datasets = ["hotpotqa"]  # choose the dataset
 
 **Model file and configuration:**
 
-The main codes of KV cache eviction algorithm, including MPC-friendly similarity approximation and hierarchical KV cache clustering are implemented in `llama_flash_attn_monkey_patch_compression.py`.
+The core code of KV cache eviction is are implemented in `llama_flash_attn_monkey_patch_compression.py`.
 
-For hierarchical clustering, the variable `alpha` controls the ratio between $\mathbf r^{\min}$ and $\mathbf r^{\max}$ (set $\alpha=0.6$ by default).
+For hierarchical clustering, `alpha` controls the ratio between $\mathbf r^{\min}$ and $\mathbf r^{\max}$ ($\alpha$ is set to 0.6 by default).
 `cluster_size1` and `cluster_size2` control the granularities of two hierarchical levels (set `cluster_size1=32` and `cluster_size2=16` by default).
-`ratio1` and `ratio2` control the dynamic selection ratio at the 1st hierarchical level and the final dynamic selection ratio, respectively.
+`ratio1` and `ratio2` control the dynamic selection ratio at the 1st hierarchy level and the overall dynamic selection ratio, respectively.
 
-We give an example on the hotpotqa dataset here, 30\% tokens are preserved on average after static eviction based on the accumulated attention score.
-Hence, set `ratio2=0.1` for a final KV cache budget of 3\%, `ratio2=0.2` for a final KV cache budget of 6\%.
+The tools are implemented in `utils.py`. For example, `group_key_min_max` computes $\mathbf r^{\min}$ and $\mathbf r^{\max}$ for each cluster. `groupidx_to_tokenidx` converts the selected group indices into the corresponding token indices.
 
 **Model inference and evaluation:**
 

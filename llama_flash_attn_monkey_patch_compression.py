@@ -18,13 +18,14 @@ dynamic_ratio = []
 dataset = None
 is_print_static, is_print_dynamic = True, True
 
+LARGE_TOKEN_NUM = 24000
 skip_first2layers = False
 if skip_first2layers:
-    print('🏄‍♂️ Skip the first 2 layers.')
+    print('⚠️ Skip the first 2 layers.')
     skip_layer_idx = [0, 1]  # skip the first 2 layers
     layer_num = 30
 else:
-    print('🏄‍♂️ Do not skip any layer.')
+    print('⚠️ Do not skip any layer.')
     skip_layer_idx = []  # do not skip any layer
     layer_num = 32
 
@@ -96,7 +97,7 @@ def forward(
             # hierarchical clustering
             alpha = 0.6
             ratio1 = 0.5  # 1st level selection ratio
-            ratio2 = 0.3  # overall dynamic selection ratio
+            ratio2 = 0.24  # overall dynamic selection ratio
             cluster_size1 = 32  # 1st level: s=32
             cluster_size2 = 16  # 2st level: s=16
             if is_print_dynamic:
@@ -202,9 +203,10 @@ def forward(
         'hotpotqa': (1e-8, 0.3),
         'narrativeqa': (1e-3, 0.15),
         'triviaqa': (1e-4, 0.2),
-        'passage_retrieval_en': (1e-20, 0.5),
+        'qasper': (1e-8, 0.4),
+        'gov_report': (1e-20, 0.66),
     }
-    if key_states.shape[2] > 24000:
+    if key_states.shape[2] > LARGE_TOKEN_NUM:
         last_attn_weights = torch.matmul(query_states[:, :, -int(key_states.shape[2]*0.1):, :], key_states.transpose(-1, -2))
     else:
         last_attn_weights = torch.matmul(query_states[:, :, -int(key_states.shape[2]*0.2):, :], key_states.transpose(-1, -2))
