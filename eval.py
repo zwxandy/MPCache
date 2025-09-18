@@ -31,7 +31,6 @@ dataset2metric = {
     "trec": classification_score,
     "triviaqa": qa_f1_score,
     "samsum": rouge_score,
-    "lsht": classification_score,
     "passage_retrieval_en": retrieval_score,
     "passage_count": count_score,
     "passage_retrieval_zh": retrieval_zh_score,

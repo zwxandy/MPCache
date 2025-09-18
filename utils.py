@@ -1,6 +1,5 @@
 import torch
 
-
 def group_key_min_max(key_states, group_size):
     num_padding_token = (key_states.shape[2] + group_size - 1) // group_size * group_size - key_states.shape[2]
     padding_token = key_states[:, :, -group_size:-group_size+num_padding_token, :]
