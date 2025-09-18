@@ -28,3 +28,4 @@ The motivation behind this script is to tackle the challenges posed by processin
 Here's an example of how to use the script:
 ```shell
 python compress.py --model glm2 --max_len 500
+

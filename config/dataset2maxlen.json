@@ -14,7 +14,6 @@
     "trec": 64,
     "triviaqa": 32,
     "samsum": 128,
-    "lsht": 64,
     "passage_count": 32,
     "passage_retrieval_en": 32,
     "passage_retrieval_zh": 32,
