@@ -232,9 +232,9 @@ def forward(
     if len(static_ratio) == layer_num:
         record_static_ratio.append(sum(static_ratio) / layer_num)
         static_ratio.clear()
-    if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
-    # if len(record_static_ratio) == 20:
-        print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
+    # if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
+    # # if len(record_static_ratio) == 20:
+    #     print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
     if is_print_static:
         print(f'⚙️ Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
         is_print_static = False
@@ -281,7 +281,7 @@ def _prepare_decoder_attention_mask(self, attention_mask, input_shape,
 
 
 def replace_llama_attn_with_flash_attn(ds=None):
-    print('use FlashAttention')
+    print('✨🚀 FlashAttention is enabled')
     global dataset
     if ds is not None:
         dataset = ds
