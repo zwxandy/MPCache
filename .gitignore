@@ -1,1 +1,5 @@
 llama_flash_attn_monkey_patch_compression_topk.py
+llama_flash_attn_monkey_patch_compression_layershare.py
+llama_flash_attn_monkey_patch_compression_ls.py
+modeling_llama_layershare.py
+modeling_llama_origin.py

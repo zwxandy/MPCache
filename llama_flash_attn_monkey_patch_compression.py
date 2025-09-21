@@ -97,12 +97,12 @@ def forward(
             # hierarchical clustering
             alpha = 0.6
             ratio1 = 0.5  # 1st level selection ratio
-            ratio2 = 0.24  # overall dynamic selection ratio
+            ratio2 = 0.2  # overall dynamic selection ratio
             cluster_size1 = 32  # 1st level: s=32
             cluster_size2 = 16  # 2st level: s=16
             if is_print_dynamic:
-                print(f'⚙️ Selection ratio at 1st level: {ratio1 * 100:.2f}%')
-                print(f'⚙️ Overall dynamic selection ratio: {ratio2 * 100:.2f}%')
+                print(f'⚙️ Selection ratio at 1st level: {ratio1 * 100:.1f}%')
+                print(f'⚙️ Overall dynamic selection ratio: {ratio2 * 100:.1f}%')
                 is_print_dynamic = False
             b_max, b_min, num_padding_token = group_key_min_max(key_states_evict_static, group_size=cluster_size1)
             sim = torch.sum((alpha * query_states * b_max + (1 - alpha) * query_states * b_min), dim=-1).unsqueeze(2)
@@ -202,7 +202,7 @@ def forward(
     static_threshold_list = {
         'hotpotqa': (1e-8, 0.3),
         'narrativeqa': (1e-3, 0.15),
-        'triviaqa': (1e-4, 0.2),
+        'triviaqa': (1e-4, 0.21),
         'qasper': (1e-8, 0.4),
         'gov_report': (1e-20, 0.66),
     }
@@ -219,10 +219,7 @@ def forward(
     accum_sum = torch.sum(is_important[0, :, :], dim=0, keepdim=False)
     self.ic_token_idx = torch.argwhere(accum_sum > 0)
 
-    if ic_token_idx is None:
-        self.base_dynamic_mask = torch.full((1, last_attn_weights.shape[1], 1, self.ic_token_idx.shape[0]), fill_value=torch.finfo(last_attn_weights.dtype).min).to(last_attn_weights.device)
-    else:
-        self.base_dynamic_mask = torch.full((1, last_attn_weights.shape[1], 1, ic_token_idx.shape[0]), fill_value=torch.finfo(last_attn_weights.dtype).min).to(last_attn_weights.device)
+    self.base_dynamic_mask = torch.full((1, last_attn_weights.shape[1], 1, self.ic_token_idx.shape[0]), fill_value=torch.finfo(last_attn_weights.dtype).min).to(last_attn_weights.device)
 
     if layer_idx not in skip_layer_idx:
         if ic_token_idx is None:
@@ -233,10 +230,10 @@ def forward(
         record_static_ratio.append(sum(static_ratio) / layer_num)
         static_ratio.clear()
     # if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
-    # # if len(record_static_ratio) == 20:
-    #     print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.2f}%')
+    # if len(record_static_ratio) == 30:
+        # print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.1f}%')
     if is_print_static:
-        print(f'⚙️ Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.2f}%')
+        print(f'⚙️ Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.1f}%')
         is_print_static = False
 
     if key_padding_mask is None:
