@@ -19,6 +19,7 @@ dataset = None
 is_print_static, is_print_dynamic = True, True
 
 LARGE_TOKEN_NUM = 24000
+REPORT_STEP = 30
 skip_first2layers = False
 if skip_first2layers:
     print('⚠️ Skip the first 2 layers.')
@@ -230,7 +231,7 @@ def forward(
         record_static_ratio.append(sum(static_ratio) / layer_num)
         static_ratio.clear()
     # if 0 < len(record_static_ratio) <= 100 and len(record_static_ratio) % 10 == 0:
-    # if len(record_static_ratio) == 30:
+    # if len(record_static_ratio) == REPORT_STEP:
         # print(f'Static remained ratio: {sum(record_static_ratio) / len(record_static_ratio):.1f}%')
     if is_print_static:
         print(f'⚙️ Remained ratio after static eviction: {static_threshold_list[dataset][1] * 100:.1f}%')
