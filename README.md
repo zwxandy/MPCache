@@ -65,3 +65,5 @@ After the inference, run `eval_mine.py` to evaluate the model performance (no ne
 python eval_mine.py --model longchat-v1.5-7b-32k
 ```
 We can get the results on the datasets in `result.json`.
+
+For MPC inference, we use Secretflow with SPU to evaluate the efficiency, which can be found in `infer/`
