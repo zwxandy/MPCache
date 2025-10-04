@@ -49,8 +49,10 @@ For hierarchical clustering, `alpha` controls the ratio between $\mathbf r^{\min
 The tools are implemented in `utils.py`. For example, `group_key_min_max` computes $\mathbf r^{\min}$ and $\mathbf r^{\max}$ for each cluster. `groupidx_to_tokenidx` converts the selected group indices into the corresponding token indices.
 
 The core algorithm of similarity approximation is shown below:
-<img src="imgs/fig1.png" alt="Description" width="400"/>
-<img src="imgs/fig2.png" alt="Description" width="400"/>
+
+![Description](imgs/img1.png)
+
+![Description](imgs/img2.png)
 
 
 **Model inference and evaluation:**

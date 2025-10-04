@@ -30,17 +30,7 @@ bazel run -c opt //examples/python/ml/project_path -- --config `pwd`/path/3pc.js
 
 `generation_evaluation.py` is used to evaluate the model inference with KV cache. `module_evaluation.py` is used to evaluated every part of extra costs introduced by `similarity approximation, top-k ranking, and token gathering (idx2onehot and onehot_k_gemv)`.
 The core algorithm of similarity approximation is shown below:
-$$
-\mathrm{Sim}(\mathbf{q}, \mathbf K_{c})
-\approx
-\sum_{i=0}^{d-1} \max (\mathbf{q}_i \mathbf{r}^{\max}_i, \mathbf{q}_i \mathbf{r}^{\min}_i).
-$$
 
-$$
-\mathrm{Sim}(\mathbf{q}, \mathbf K_{c}) 
-\approx 
-\sum_{i=0}^{d-1} \alpha \cdot \mathbf{q}_i \mathbf{r}^{\max}_i 
-+ (1 - \alpha) \cdot \mathbf{q}_i \mathbf{r}^{\min}_i
-=
-\sum_{i=0}^{d-1}\mathbf{q}_i \cdot(\alpha \mathbf{r}^{\max}_i + (1 - \alpha) \mathbf{r}^{\min}_i).
-$$
+![Description](../imgs/img1.png)
+
+![Description](../imgs/img2.png)
