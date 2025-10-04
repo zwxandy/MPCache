@@ -7,7 +7,7 @@ To clearly profile the overhead of each module, we evaluate each module separate
 * Framework: SecretFlow
 * SPU version: 0.9.1.dev
 * MPC Setting: 3PC (three-party computation)
-* Build Tool: Bazel
+* Build Tool: Bazel (configs in BUILD.bazel)
 
 Before starting, make sure you have installed and built SecretFlow with Bazel.
 
