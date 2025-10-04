@@ -27,3 +27,5 @@ bazel run -c opt //examples/python/utils:nodectl -- --config `pwd`/path/3pc.json
 ```bash
 bazel run -c opt //examples/python/ml/project_path -- --config `pwd`/path/3pc.json
 ```
+
+`generation_evaluation.py` is used to evaluate the model inference with KV cache. `module_evaluation.py` is used to evaluated every part of extra costs introduced by `similarity approximation, top-k ranking, and token gathering (idx2onehot and onehot_k_gemv)`.
