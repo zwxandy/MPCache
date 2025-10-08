@@ -5,6 +5,7 @@ Following Secretflow, we use `bazel` to install and build the framework.
 To clearly profile the overhead of each module, we evaluate operator-level cost to obtain a detailed breakdown.
 
 * Framework: SecretFlow
+* Python version: 3.10
 * SPU version: 0.9.1.dev
 * MPC Setting: 3PC (three-party computation)
 * Build Tool: Bazel (configs in BUILD.bazel)
