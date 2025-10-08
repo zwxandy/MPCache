@@ -151,7 +151,7 @@ if __name__ == '__main__':
     group_size = 16  # S
     num_group = num_token // group_size  # G=32
 
-    eval_mode = 'topk'
+    eval_mode = 'topk'  # evaluated operator
 
     if eval_mode == 'topk':
         sim = np.random.randn(num_head, num_token)
