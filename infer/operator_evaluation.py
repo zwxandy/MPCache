@@ -71,12 +71,20 @@ def qb_ewmm(q, b):
     """
     return q * b
 
-def onehot_k_gemv(onehot, k):
+def onehot_k_gemv(onehot, K):
     """
     Matrix multiplication between one-hot vectors and k.
-    onehot: (H, k, T), k: (H, T, D) -> y: (H, k, D)
+    onehot: (H, k, T), K: (H, T, D) -> y: (H, k, D)
     """
-    return onehot @ k
+    return onehot @ K
+
+def token_gather(idx, K):
+    """
+    Token gathering from k based on index.
+    idx: (H, k), K: (H, T, D) -> y: (H, k, D)
+    """
+    one_hot = nn.one_hot(idx, num_classes=512, axis=-1)
+    return one_hot @ K
 
 
 def run_on_spu_topk(sim):
@@ -118,10 +126,17 @@ def run_on_spu_qb_ewmm(q, b):
     y_pt = ppd.get(y_enc)
     return y_pt
 
-def run_on_spu_onehot_k_gemv(onehot, k):
+def run_on_spu_onehot_k_gemv(onehot, K):
     input_enc1 = ppd.device("P2")(lambda x: x)(onehot)
-    input_enc2 = ppd.device("P2")(lambda x: x)(k)
+    input_enc2 = ppd.device("P2")(lambda x: x)(K)
     y_enc = ppd.device("SPU")(onehot_k_gemv)(input_enc1, input_enc2)
+    y_pt = ppd.get(y_enc)
+    return y_pt
+
+def run_on_spu_token_gather(idx, K):
+    input_enc1 = ppd.device("P2")(lambda x: x)(idx)
+    input_enc2 = ppd.device("P2")(lambda x: x)(K)
+    y_enc = ppd.device("SPU")(token_gather)(input_enc1, input_enc2)
     y_pt = ppd.get(y_enc)
     return y_pt
     
@@ -144,11 +159,11 @@ if __name__ == '__main__':
     
     elif eval_mode == 'compute_sim':
         q = np.random.randn(batch_size, num_head, 1, dim_per_head)
-        k = np.random.randn(batch_size, num_head, num_token, dim_per_head)
-        p = run_on_spu_compute_sim(q, k)
+        K = np.random.randn(batch_size, num_head, num_token, dim_per_head)
+        p = run_on_spu_compute_sim(q, K)
     
     elif eval_mode == 'idx2onehot':
-        index = np.random.randint(low=0, high=127, size=(num_head, k))
+        index = np.random.randint(low=0, high=127, size=(batch_size, num_head, k))
         p = run_on_spu_idx2onehot(index)
     
     elif eval_mode == 'max_in_tensor':
@@ -167,5 +182,10 @@ if __name__ == '__main__':
     
     elif eval_mode == 'onehot_k_gemv':
         onehot = np.random.randint(low=0, high=1, size=(batch_size, num_head, k, num_token))
-        k = np.random.randn(batch_size, num_head, num_token, dim_per_head)
-        p = run_on_spu_onehot_k_gemv(onehot, k)
+        K = np.random.randn(batch_size, num_head, num_token, dim_per_head)
+        p = run_on_spu_onehot_k_gemv(onehot, K)
+    
+    elif eval_mode == 'run_on_spu_token_gather':
+        index = np.random.randint(low=0, high=127, size=(batch_size, num_head, k))
+        K = np.random.randn(batch_size, num_head, num_token, dim_per_head)
+        p = run_on_spu_token_gather(index, K)

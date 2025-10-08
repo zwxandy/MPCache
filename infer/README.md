@@ -1,8 +1,8 @@
 **Environment:**
 
-We use the Secretflow framework with SPU to evaluate the efficiency. The SPU version is 0.9.1.dev. We mainly focus on the 3-party computation (3PC)-based inference.
+We use the Secretflow framework with SPU to evaluate the decoding efficiency. The SPU version is 0.9.1.dev. We mainly focus on the 3-party computation (3PC)-based inference.
 Following Secretflow, we use `bazel` to install and build the framework. 
-To clearly profile the overhead of each module, we evaluate each module separately to obtain a detailed breakdown.
+To clearly profile the overhead of each module, we evaluate operator-level cost to obtain a detailed breakdown.
 
 * Framework: SecretFlow
 * SPU version: 0.9.1.dev
@@ -28,7 +28,7 @@ bazel run -c opt //examples/python/utils:nodectl -- --config `pwd`/path/3pc.json
 bazel run -c opt //examples/python/ml/project_path -- --config `pwd`/path/3pc.json
 ```
 
-`generation_evaluation.py` is used to evaluate the model inference with KV cache. `module_evaluation.py` is used to evaluated every part of extra costs introduced by `similarity approximation, top-k ranking, and token gathering (idx2onehot and onehot_k_gemv)`.
+`generation_evaluation.py` is used to evaluate the model inference with KV cache. `operator_evaluation.py` is used to evaluated every part of extra costs introduced by `similarity approximation, top-k ranking, and token gathering (idx2onehot and onehot_k_gemv)`.
 The core algorithm of similarity approximation is shown below:
 
 ![Description](../imgs/img1.png)
