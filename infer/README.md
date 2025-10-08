@@ -35,3 +35,5 @@ The core algorithm of similarity approximation is shown below:
 ![Description](../imgs/img1.png)
 
 ![Description](../imgs/img2.png)
+
+`rank.cc` is the optimized version of top-k protocol in SPU framework, which parallelizes the attention head dimension to avoid the latency overhead caused by sequential computation.
