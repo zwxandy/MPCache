@@ -201,11 +201,11 @@ if __name__ == '__main__':
     
     model_config = GPT2Config.from_pretrained("gpt2", cache_dir='path/ckpt_torch_gpt2')
 
-    # modify the model config to simulate different scales
-    model_config.num_attention_heads = 32
-    model_config.hidden_size = 1024
-    model_config.n_layer = 1
-    model_config.activation_function = 'silu'
+    # modify the model config to simulate different model scales
+    # model_config.num_attention_heads = 32
+    # model_config.hidden_size = 1024
+    # model_config.n_layer = 1
+    # model_config.activation_function = 'silu'
     print(model_config)
 
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir='path/ckpt_torch_gpt2')
