@@ -1,6 +1,6 @@
 # MPCache: MPC-Friendly KV Cache Eviction for Efficient Private LLM Inference
 
-In this work, we follow the framework of LongBench to build MPCache.
+MPCache is accepted by NeurIPS '25. In this work, we follow the framework of LongBench to build MPCache.
 
 ![Description](imgs/img3.png)
 
@@ -76,3 +76,13 @@ python eval_mine.py --model longchat-v1.5-7b-32k
 We can get the results on the datasets in `result.json`.
 
 For MPC inference, we use Secretflow with SPU to evaluate the efficiency, which can be found in `infer/`
+
+**Reference**
+```
+@article{zeng2025mpcache,
+  title={MPCache: MPC-Friendly KV Cache Eviction for Efficient Private Large Language Model Inference},
+  author={Zeng, Wenxuan and Dong, Ye and Zhou, Jinjin and Ma, Junming and Tan, Jin and Wang, Runsheng and Li, Meng},
+  journal={arXiv preprint arXiv:2501.06807},
+  year={2025}
+}
+```
