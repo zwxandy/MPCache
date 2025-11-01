@@ -11,6 +11,7 @@ from utils import group_key_min_max, groupidx_to_tokenidx, groupidx_to_groupidx
 from flash_attn.flash_attn_interface import flash_attn_varlen_qkvpacked_func
 from flash_attn.bert_padding import unpad_input, pad_input
 
+
 static_ratio = []
 record_static_ratio = []
 dynamic_ratio = []
